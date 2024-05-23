@@ -9,6 +9,7 @@ import clsx from 'clsx';
 import type { Address, Country } from '@/interfaces';
 import { useAddressStore } from '@/store';
 import { deleteUserAddress, setUserAddress } from '@/actions';
+import { Session } from 'next-auth';
 
 type FormInputs = {
     firstName: string;
@@ -25,9 +26,10 @@ type FormInputs = {
 interface Props {
     countries: Country[];
     userStoredAddress?: Partial<Address>; //Partial makes all properties optional
+    session: Session
 }
 
-export const AddressForm = ({ countries, userStoredAddress = {} }: Props) => {
+export const AddressForm = ({ countries, userStoredAddress = {}, session }: Props) => {
 
     const router = useRouter();
     const { handleSubmit, register, formState: { isValid }, reset } = useForm<FormInputs>({
@@ -44,7 +46,11 @@ export const AddressForm = ({ countries, userStoredAddress = {} }: Props) => {
     //Comente el código anterior ya que estoy controlando que haya session directamente desde el callback de auth.config
     //y cuando volvía del callback daba un error y me sacaba fuera otra vez!
 
-    const { data: session } = useSession();
+    // const { data: session } = useSession();
+
+    //TERMINE COMENTANDO ESTE CODIGO ANTERIOR YA QUE A LA PRIMERA NO ME DEVOLVIA LA SESSION
+    //SI RECARGABA LA PAGINA ENTONCES SI ME LA DEVOLVIA, PERO NO LOGRE QUE FUNCIONE
+    //COMO WORKAROUND ESTOY PASANDO LA SESSION DESDE la PAGE QUE ES SERVER RENDERING... Y ASÍ FUNCIONA!
 
     const setAddress = useAddressStore(state => state.setAddress);
     const address = useAddressStore(state => state.address);
